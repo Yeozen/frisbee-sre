@@ -52,8 +52,6 @@ SRE portfolio project - observability, failure simulation, Kubernetes
 * `/crash` → raises exception
 * `/memory` → simulate memory leak (optional)
 
-👉 These are your “interview weapons”
-
 ---
 
 ## 2. **Docker**
