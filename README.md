@@ -217,3 +217,5 @@ Learnt more about kubernetes and how it interacts with docker, kubernetes is lik
 have to be docker, as long its something that can run container instances and communicate via the container runtime interface, kubernetes can work with it,
 added liveness probes as well as resource specifications (CPU/RAM), liveness probes are kubernetes way of checking pod uptime by probing it with requests and if it doesn't respond based on the faillureThreshold, it will restart the pod. Resource specs are defined by a request and limit, where request is the guaranteed value the app gets but limit is the absolute maximum, if it exceeds these values it will restart/throttle the pod based on the value exceeded
 
+11/5
+grafana kept crashing on initialization due to OOMkilled, 256Mi limit too small for it, increased to 512Mi
