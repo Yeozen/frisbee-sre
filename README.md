@@ -219,3 +219,17 @@ added liveness probes as well as resource specifications (CPU/RAM), liveness pro
 
 11/5
 grafana kept crashing on initialization due to OOMkilled, 256Mi limit too small for it, increased to 512Mi
+## Incident 1 — Grafana OOMKilled
+
+Symptoms: Grafana pod restarting repeatedly, kubectl get pods showing OOMKilled
+Diagnosis: Memory limit of 256Mi too low for Grafana initialisation spike
+Fix: Increased memory request to 256Mi, limit to 512Mi in deployment.yaml
+Applied: kubectl apply -f k8s/grafana/deployment.yaml
+Result: Pod stabilised, no further restarts
+
+Lesson: Always check OOMKilled first when pods restart unexpectedly.
+Command that revealed it: kubectl get pods
+
+12/5
+setting up grafana visualizations, wtf my metrics endpoint shows /health has like 8000+ requests but /slow and /crash have like 1 or 2 only cos i manually
+used them, probs due to the liveness probes on the main deployment
