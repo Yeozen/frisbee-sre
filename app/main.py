@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Response
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import time
+import random
 
 app = FastAPI()
 
@@ -24,10 +25,11 @@ def health():
 @app.get("/slow")
 def slow():
     start = time.time()
-    time.sleep(5)
+    delay = random.uniform(1, 10)
+    time.sleep(delay)
     REQUEST_LATENCY.labels(endpoint="/slow").observe(time.time() - start)
     REQUEST_COUNT.labels(method="GET", endpoint="/slow", status="200").inc()
-    return {"status": "slow response"}
+    return {"status": f"slow response after {delay:.2f}s"}
 
 @app.get("/crash")
 def crash():
