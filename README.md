@@ -1,207 +1,100 @@
-# frisbee-sre
-SRE portfolio project - observability, failure simulation, Kubernetes
+# Frisbee SRE — Observability & Reliability Project
 
+A production-grade observability lab demonstrating failure detection, 
+incident response, and system recovery using a match-tracking service 
+as the workload.
 
-# 🧭 High-Level Architecture
+## Architecture
 
-```
-[ Client / curl / Postman ]
-            ↓
-     [ FastAPI Service ]
-            ↓
-     [ Redis (optional) ]
-            ↓
--------------------------------
-|        Kubernetes Cluster    |
-|  - Deployment (App)          |
-|  - Service (ClusterIP)       |
-|  - HPA (optional later)      |
--------------------------------
-            ↓
-     [ Prometheus ]
-            ↓
-     [ Grafana ]
-            ↓
-     [ Alertmanager ]
-            ↓
-     [ Email / Webhook Alert ]
-```
+[paste your architecture here — even a simple text diagram is fine]
+
+App (FastAPI) → Kubernetes (2 replicas) → Prometheus (scrapes /metrics 
+every 15s) → Grafana (visualises request rate, error rate, p95 latency)
+
+## Stack
+- FastAPI — application layer
+- Docker — containerisation
+- Kubernetes — orchestration and self-healing
+- Prometheus — metrics collection and storage
+- Grafana — visualisation
+
+## Dashboards
+[insert your Grafana screenshot here]
 
 ---
 
-# 🔧 Core Components (What + Why)
+## Incident Walkthrough
 
-## 1. **FastAPI Service (Python)**
+### Incident 1 — OOMKilled: Grafana pod crash loop
 
-### Why:
+**Symptoms**
+Grafana pod restarting repeatedly shortly after deployment.
 
-* Lightweight
-* Fast to build
-* Easy to instrument with metrics
+**Discovery**
+← how did you first notice it? what command did you run?
 
-### Endpoints:
+**Diagnosis**
+← what did kubectl get pods show? what did OOMKilled tell you?
 
-* `/health` → health check
-* `/match` → create match
-* `/score` → update score
-* `/stats` → get stats
+**Root cause**
+← why did it happen? explain in your own words.
 
-### 🔥 Failure endpoints (VERY IMPORTANT):
+**Fix**
+← what did you change in the deployment file and why?
 
-* `/slow` → adds artificial delay
-* `/crash` → raises exception
-* `/memory` → simulate memory leak (optional)
+**Result**
+← what happened after you applied the fix?
 
----
-
-## 2. **Docker**
-
-### You will:
-
-* Write a clean `Dockerfile`
-* Use slim Python image
-* Add proper logging
+**Lesson learned**
+Always set memory limits conservatively on first deployment and 
+adjust based on observed usage. Grafana's initialisation spike 
+exceeds its steady-state memory consumption significantly.
 
 ---
 
-## 3. **Kubernetes**
+### Incident 2 — High latency detection via Grafana
 
-### Resources:
+**Symptoms**
+p95 latency panel showing values between 9-10 seconds on the 
+/slow endpoint.
 
-* **Deployment**
+**Discovery
+← how did you spot it? what were you looking at?
 
-  * 2–3 replicas
-* **Service**
+**Diagnosis**
+← what did the Grafana panel tell you? what metric revealed it?
 
-  * ClusterIP (NodePort optional)
+**Root cause**
+← what was causing the latency? explain what the /slow endpoint does.
 
-### You will demonstrate:
-
-* Pod restarts
-* Scaling
-* Self-healing
-
----
-
-## 4. **Prometheus (Metrics Collection)**
-
-### Collect:
-
-* CPU / Memory (node exporter or kube metrics)
-* HTTP requests
-* Latency
-* Error rates
-
-👉 Use Python Prometheus client
+**What you would do in production**
+← if this were a real system, what would your next steps be?
+← how would you find which part of the code was slow?
 
 ---
 
-## 5. **Grafana (Visualization)**
+### Incident 3 — Pod self-healing demonstration
 
-### Dashboards:
+**Symptoms**
+One pod manually deleted to simulate a node failure.
 
-* Request rate
-* Error rate
-* Latency (p95 if possible)
-* Pod restarts
+**Discovery**
+Monitored via kubectl get pods -w
 
----
-
-## 6. **Alertmanager**
-
-### Alerts:
-
-* High CPU usage
-* High error rate
-* Pod crash loop
-
-👉 Even simple alerting is enough
+**What happened**
+← describe what you saw when you deleted the pod. 
+← how long did it take to recover?
+← what does this tell you about Kubernetes?
 
 ---
 
-## 7. **AWS (Later Phase)**
+## Key SRE Concepts Demonstrated
 
-### Minimal setup:
-
-* EC2 instance
-* Run k3s or lightweight K8s
-
----
-
-## 8. **Terraform**
-
-### Manage:
-
-* EC2 instance
-* Security groups
-
----
-
-## 9. **CI/CD (GitHub Actions)**
-
-### Pipeline:
-
-1. Build Docker image
-2. Push to Docker Hub
-3. Deploy to K8s (kubectl apply)
-
----
-
-# 🔄 System Flow (What Happens Step-by-Step)
-
-## 🟢 Normal Flow
-
-1. User sends request (`/score`)
-2. FastAPI processes it
-3. Logs + metrics generated
-4. Prometheus scrapes metrics
-5. Grafana visualizes them
-
----
-
-## 🔴 Failure Scenario (This is what matters)
-
-### Example: `/crash`
-
-1. Request hits API
-2. App throws error
-3. Error rate spikes
-4. Prometheus detects anomaly
-5. Alertmanager triggers alert
-6. Pod may restart (K8s self-healing)
-7. You debug via:
-
-   * `kubectl logs`
-   * Grafana dashboards
-
-
-
-```
-frisbee-sre-project/
-│
-├── app/
-│   ├── main.py
-│   ├── routes/
-│   └── metrics.py
-│
-├── docker/
-│   └── Dockerfile
-│
-├── k8s/
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   └── prometheus/
-│
-├── terraform/
-│   └── main.tf
-│
-├── .github/workflows/
-│   └── ci-cd.yaml
-│
-├── README.md
-└── architecture.png
-```
-
+- **Reconciliation loop** — ← explain in one sentence
+- **OOMKilled** — ← explain in one sentence  
+- **p95 latency** — ← explain in one sentence
+- **Liveness probe** — ← explain in one sentence
+- **PersistentVolumeClaim** — ← explain in one sentence
 
 5/5
 Git push issue asking for auth despite me already setting up the ssh key
