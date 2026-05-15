@@ -51,18 +51,25 @@ Panels:
 
 ### Incident 1 — Grafana OOMKilled
 
-**Date:** 11/5
-**Symptoms:** Grafana pod restarting repeatedly on startup
-**Discovery:** kubectl get pods showed STATUS: OOMKilled with 
+**Date:** 
+11/5
+**Symptoms:** 
+Grafana pod restarting repeatedly on startup
+**Discovery:** 
+kubectl get pods showed STATUS: OOMKilled with 
 restart count climbing
-**Root cause:** Memory limit of 256Mi was too low for Grafana's 
+**Root cause:** 
+Memory limit of 256Mi was too low for Grafana's 
 initialisation spike. Grafana sets up its internal SQLite database 
 and loads plugins on first boot, temporarily consuming more memory 
 than its steady-state usage.
-**Fix:** Increased memory limit from 256Mi to 512Mi in 
+**Fix:** 
+Increased memory limit from 256Mi to 512Mi in 
 k8s/grafana/deployment.yaml, redeployed with kubectl apply
-**Result:** Pod stabilised immediately, no further restarts
-**Lesson:** Grafana's initialisation memory consumption significantly 
+**Result:** 
+Pod stabilised immediately, no further restarts
+**Lesson:** 
+Grafana's initialisation memory consumption significantly 
 exceeds its steady-state usage. Always monitor first-boot behaviour 
 separately from normal operation. OOMKilled is always the first thing 
 to check when pods restart unexpectedly.
@@ -71,16 +78,22 @@ to check when pods restart unexpectedly.
 
 ### Incident 2 — Pod self-healing demonstration
 
-**Date:** 6/5
-**Scenario:** Manually deleted a running frisbee-api pod to simulate 
+**Date:** 
+6/5
+**Scenario:** 
+Manually deleted a running frisbee-api pod to simulate 
 a node failure
-**Discovery:** kubectl get pods -w showed the deleted pod entering 
+**Discovery:** 
+kubectl get pods -w showed the deleted pod entering 
 Terminating state immediately
-**What happened:** Within 3 seconds Kubernetes detected the actual 
+**What happened:** 
+Within 3 seconds Kubernetes detected the actual 
 replica count (1) did not match the desired count (2) in the 
 deployment spec and automatically created a replacement pod
-**Recovery time:** ~3 seconds to schedule, ~10 seconds to Running
-**Lesson:** Kubernetes reconciliation loop continuously compares 
+**Recovery time:** 
+~3 seconds to schedule, ~10 seconds to Running
+**Lesson:** 
+Kubernetes reconciliation loop continuously compares 
 actual state against desired state. The deployment spec is a 
 contract — Kubernetes enforces it automatically without human 
 intervention.
@@ -89,11 +102,15 @@ intervention.
 
 ### Incident 3 — High p95 latency detection
 
-**Date:** 12/5
-**Symptoms:** p95 latency panel in Grafana showing 9-10 seconds
-**Discovery:** Observed via Grafana p95 latency panel using query:
+**Date:** 
+12/5
+**Symptoms:** 
+p95 latency panel in Grafana showing 9-10 seconds
+**Discovery:** 
+Observed via Grafana p95 latency panel using query:
 histogram_quantile(0.95, rate(app_request_latency_seconds_bucket[1m]))
-**Root cause:** /slow endpoint using random.uniform(1, 10) to 
+**Root cause:** 
+/slow endpoint using random.uniform(1, 10) to 
 simulate variable latency, ceiling of 10s pushing p95 near maximum
 **What I would do in a real system:** 
 - Check which specific requests are slowest using Prometheus labels
@@ -103,7 +120,8 @@ simulate variable latency, ceiling of 10s pushing p95 near maximum
   the endpoint is slow
 - Set an alert threshold at p95 > 2s to get notified before users 
   are impacted
-**Lesson:** p95 latency is more meaningful than average latency 
+**Lesson:** 
+p95 latency is more meaningful than average latency 
 because it captures the experience of the slowest 5% of users — 
 the ones most likely to complain or churn.
 

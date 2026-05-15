@@ -6,6 +6,12 @@ data:
   prometheus.yml: |
     global:
       scrape_interval: 15s
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets: ["alertmanager:9093"]
+    rule_files:
+      - /etc/prometheus/alerts.yml
     scrape_configs:
       - job_name: "frisbee-api"
         static_configs:

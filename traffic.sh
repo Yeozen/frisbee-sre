@@ -1,6 +1,7 @@
+#creates traffic for all 3 endpoints
 #!/bin/bash
 
-echo "Starting Dual-App Traffic Simulation... [CTRL+C] to stop."
+echo "Traffic Simulation... [CTRL+C] to stop."
 
 # Targets
 APP_SOURCE="http://localhost:30000/health"
