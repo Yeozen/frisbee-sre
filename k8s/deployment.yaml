@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: frisbee-api
-          image: frisbee-api:v1
+          image: zen2309/frisbee-api:v1
           ports:
             - containerPort: 8000
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "64Mi"
