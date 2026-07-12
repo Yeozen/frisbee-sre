@@ -73,7 +73,11 @@ resource "aws_instance" "frisbee_server" {
   }
 }
 
-# Output the public IP so you know where to connect
+resource "aws_eip" "frisbee_ip" {
+  instance = aws_instance.frisbee_server.id
+  domain   = "vpc"
+}
+
 output "instance_ip" {
-  value = aws_instance.frisbee_server.public_ip
+  value = aws_eip.frisbee_ip.public_ip
 }
