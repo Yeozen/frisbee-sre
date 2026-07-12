@@ -38,6 +38,13 @@ resource "aws_security_group" "frisbee_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+  from_port   = 6443
+  to_port     = 6443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # All outbound traffic allowed
   egress {
     from_port   = 0
@@ -50,7 +57,7 @@ resource "aws_security_group" "frisbee_sg" {
 # EC2 instance
 resource "aws_instance" "frisbee_server" {
   ami                    = "ami-0497a974f8d5dcef8"
-  instance_type          = "t3.micro"
+  instance_type          = "t3.small"
   key_name               = aws_key_pair.frisbee_key.key_name
   vpc_security_group_ids = [aws_security_group.frisbee_sg.id]
 
