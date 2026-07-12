@@ -1,3 +1,5 @@
+# frisbee-sre API v2
+
 from fastapi import FastAPI, Response
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import time
